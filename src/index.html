@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+    <head lang="en">
+        <meta charset="utf-8" />
+        <title>EIP2333 - BLS12-381 Key Generator</title>
+        <link rel="stylesheet" href="css/bootstrap.css">
+        <link rel="stylesheet" href="css/app.css">
+        <meta content="EIP2333 tool for generating BLS12-381 keys" name="description"/>
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <meta content="EIP2333 key generator" name="description" />
+        <meta content="Ian Coleman" name="author" />
+        <link type="image/x-icon" rel="icon" href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAYAAABPYyMiAAAABmJLR0T///////8JWPfcAAAACXBIWXMAAABIAAAASABGyWs+AAAAF0lEQVRIx2NgGAWjYBSMglEwCkbBSAcACBAAAeaR9cIAAAAASUVORK5CYII=" />
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="text-center">EIP2333 Key Generator</h1>
+            <p class="version">v0.1.0</p>
+            <hr>
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Key Derivation</h2>
+                    <div class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-10">
+                                <p>
+                                EIP2333 Keys can be generated from a BIP39 mnemonic, or a seed, or a master secret key.
+                                </p>
+                                <p>
+                                    For more info see the
+                                    <a href="https://eips.ethereum.org/EIPS/eip-2333" target="_blank">EIP2333 spec</a>.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="form-group generate-container">
+                            <label class="col-sm-2 control-label"></label>
+                            <div class="col-sm-10">
+                                <div class="form-inline">
+                                    <div class="input-group-inline">
+                                        <span>Generate a random mnemonic</span>:
+                                        <button id="generate" class="btn"><b>GENERATE</b></button>
+                                        <select id="strength" class="strength form-control">
+                                            <option value="128">12</option>
+                                            <option value="160" selected>15</option>
+                                            <option value="192">18</option>
+                                            <option value="224">21</option>
+                                            <option value="256">24</option>
+                                        </select>
+                                        <span>words, or enter your own below</span>.
+                                        <p class="warning help-block hidden">
+                                            <span class="text-danger">
+                                                Mnemonics with less than 12 words have low entropy and may be guessed by an attacker.
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Mnemonic Language</label>
+                            <div class="col-sm-10 languages">
+                                <div class="form-control no-border">
+                                    <a href="#english">English</a>
+                                    <!--<a href="#japanese" title="Japanese">日本語</a>
+                                    <a href="#spanish"  title="Spanish">Español</a>
+                                    <a href="#chinese_simplified"  title="Chinese (Simplified)">中文(简体)</a>
+                                    <a href="#chinese_traditional"  title="Chinese (Traditional)">中文(繁體)</a>
+                                    <a href="#french"  title="French">Français</a>
+                                    <a href="#italian"  title="Italian">Italiano</a>
+                                    <a href="#korean"  title="Korean">한국어</a>
+                                    <a href="#czech" title="Czech">Čeština</a>
+                                    <a href="#portuguese" title="Portuguese">Português</a>-->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="mnemonic" class="col-sm-2 control-label">BIP39 Mnemonic</label>
+                            <div class="col-sm-10">
+                                <textarea id="mnemonic" class="form-control" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="passphrase" class="col-sm-2 control-label">BIP39 Passphrase (optional)</label>
+                            <div class="col-sm-10">
+                                <textarea id="passphrase" class="form-control" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label for="seed" class="col-sm-2 control-label">Seed</label>
+                            <div class="col-sm-10">
+                                <textarea id="seed" class="form-control" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label for="master-secret-key" class="col-sm-2 control-label">Master Secret Key</label>
+                            <div class="col-sm-10">
+                                <textarea id="master-secret-key" class="form-control" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="master-public-key" class="col-sm-2 control-label">Master Public Key</label>
+                            <div class="col-sm-10">
+                                <textarea id="master-public-key" class="form-control" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" readonly="true"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Derived Keys</h2>
+                    <div class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label for="path" class="col-sm-2 control-label">Path</label>
+                            <div class="col-sm-10">
+                                <input id="path" class="form-control mono" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="m/i">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label for="path" class="col-sm-2 control-label"></label>
+                            <div class="col-sm-10">
+                                <p>
+                                    Simple child keys (click to use)
+                                    <a href="#" class="suggested-path mono">m/i</a>
+                                </p>
+                                <p>
+                                EIP2334 Validator key paths:
+                                </p>
+                                <ul>
+                                    <li>
+                                        Withdrawal keys
+                                        <a href="#" class="suggested-path mono">m/12381/3600/i/0</a>
+                                    </li>
+                                    <li>
+                                        Signing keys
+                                        <a href="#" class="suggested-path mono">m/12381/3600/i/0/0</a>
+                                    </li>
+                                    <li>
+                                        For more info see the
+                                        <a href="https://eips.ethereum.org/EIPS/eip-2334#validator-keys">EIP2334 spec</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table table-striped mono">
+                        <thead>
+                            <tr>
+                                <th>Path</th>
+                                <th>Public Key</th>
+                                <th>Secret Key</th>
+                            </tr>
+                        </thead>
+                        <tbody id="derived-keys">
+                        </tbody>
+                    </table>
+                    <div>
+                        Show
+                        <input id="num-rows" class="form-field" type="number" value="20">
+                        <button id="more-rows">more rows</button>
+                        starting at index
+                        <input id="start-index" class="form-field" type="number">
+                        (leave blank to generate from next index)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 id="info">Info</h2>
+                    <p>
+                    You can use this tool without having to be online.
+                    </p>
+                    <p>
+                    In your browser, select file save-as, and save this page
+                    as a file.
+                    </p>
+                    <p>
+                    Double-click that file to open it in a browser
+                    on any offline computer.
+                    </p>
+                    <p>
+                    <span>Alternatively, download the file from the latest GitHub release</span>
+                    -
+                    <a href="https://github.com/iancoleman/eip2333-tool/releases/latest/">https://github.com/iancoleman/eip2333-tool/releases/latest/</a>
+                    </p>
+                    <h3>This project is 100% open-source code</h3>
+                    <p>
+                        <span>Get the source code from the repository</span>
+                        -
+                        <a href="https://github.com/iancoleman/eip2333-tool" target="_blank">
+                            https://github.com/iancoleman/eip2333-tool
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <script id="key-row" type="template">
+            <tr>
+                <td class="path"></td>
+                <td class="public"></td>
+                <td class="secret"></td>
+            </tr>
+        </script>
+
+        <script src="js/eip2333-libs.js"></script>
+        <script src="js/app.js"></script>
+    </body>
+</html>

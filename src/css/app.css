@@ -1,0 +1,23 @@
+body {
+    padding-bottom: 32px;
+}
+.version {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+.languages a {
+    padding-left: 10px;
+}
+.languages a:nth-of-type(1) {
+    margin-left: -12px;
+    padding-left: 0;
+}
+.no-border {
+    border: 0;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.0);
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.0);
+}
+.mono {
+    font-family: mono;
+}
