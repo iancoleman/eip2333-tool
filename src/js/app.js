@@ -119,16 +119,23 @@
         let rowsToAdd = parseInt(DOM.numRows.value);
         let startIndex = parseInt(DOM.startIndex.value) || currentTableIndex + 1;
         let masterSecretKey = new libs.buffer.Buffer(hexToBytes(DOM.masterSecretKey.value));
+        // TODO validate masterSecretKey
         let template = DOM.keyRow.innerHTML;
         let path = DOM.path.value;
         for (let i=startIndex; i<startIndex+rowsToAdd; i++) {
-            let childPath = path.replace("i", i);
+            let childPath = path.replace(/i/g, i);
             // libs.blshdkey.pathToIndices is too strict
-            let childIndices = childPath.replace("m/", "").split("/").map(function(e) { return parseInt(e) });
+            let childIndices = getIndices(childPath);
             let childSk = masterSecretKey;
             for (let i=0; i<childIndices.length; i++) {
                 let childIndice = childIndices[i];
-                childSk = libs.blshdkey.deriveChildSK(childSk, childIndice);
+                try {
+                    childSk = libs.blshdkey.deriveChildSK(childSk, childIndice);
+                }
+                catch (e) {
+                    // TODO show error?
+                    return;
+                }
             }
             let childPk = libs.noblebls.getPublicKey(childSk);
             // show in table
@@ -167,6 +174,18 @@
         DOM.derivedKeys.innerHTML = "";
         currentTableIndex = -1;
         DOM.startIndex.value = ""
+    }
+
+    function getIndices(path) {
+        let indices = [];
+        let bits = path.split("/");
+        for (let i=0; i<bits.length; i++) {
+            let indice = parseInt(bits[i]);
+            if (!(isNaN(indice))) {
+                indices.push(indice);
+            }
+        }
+        return indices;
     }
 
     init();
