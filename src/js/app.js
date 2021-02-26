@@ -46,23 +46,17 @@
         let strength = parseInt(DOM.strength.value);
         let mnemonic = libs.bip39.generateMnemonic(strength);
         DOM.mnemonic.value = mnemonic;
-        mnemonicChanged();
-    }
-
-    function mnemonicChanged(e) {
-        if (e) {
-            e.preventDefault();
-        }
-        let mnemonic = DOM.mnemonic.value
-        // TODO verify?
         processMnemonic();
     }
 
-    function processMnemonic(e) {
-        if (e) {
-            e.preventDefault();
-        }
+    function mnemonicChanged(e) {
+        e.preventDefault();
+        processMnemonic();
+    }
+
+    function processMnemonic() {
         let mnemonic = DOM.mnemonic.value;
+        // TODO verify?
         let passphrase = DOM.passphrase.value;
         seed = libs.bip39.mnemonicToSeedSync(mnemonic, passphrase);
         let seedHex = seed.toString("hex");
@@ -107,7 +101,9 @@
     }
 
     function pathChanged(e) {
-        e.preventDefault();
+        if (e) {
+            e.preventDefault();
+        }
         clearTable();
         showRows();
     }
@@ -116,8 +112,7 @@
         e.preventDefault();
         let path = e.target.textContent;
         DOM.path.value = path;
-        clearTable();
-        showRows();
+        pathChanged();
     }
 
     function showRows() {
