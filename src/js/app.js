@@ -26,12 +26,12 @@
     }
 
     function setEvents() {
-        DOM.mnemonic.addEventListener("input", mnemonicChanged);
+        debounce(DOM.mnemonic, "input", mnemonicChanged);
         DOM.generate.addEventListener("click", generate);
-        DOM.passphrase.addEventListener("input", processMnemonic);
-        DOM.seed.addEventListener("input", seedChanged);
-        DOM.masterSecretKey.addEventListener("input", masterSecretKeyChanged);
-        DOM.path.addEventListener("input", pathChanged);
+        debounce(DOM.passphrase, "input", processMnemonic);
+        debounce(DOM.seed, "input", seedChanged);
+        debounce(DOM.masterSecretKey, "input", masterSecretKeyChanged);
+        debounce(DOM.path, "input", pathChanged);
         DOM.moreRows.addEventListener("click", showRows);
         DOM.suggestedPaths.forEach(function(e, i) {
             e.addEventListener("click", setSuggestedPath);
