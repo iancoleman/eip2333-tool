@@ -5,9 +5,8 @@
     "build": "browserify index.js --standalone libs | terser -c > ../src/js/eip2333-libs.js"
   },
   "dependencies": {
-    "@chainsafe/bls-hd-key": "^0.2.0",
     "bip39": "^3.0.3",
-    "buffer": "^5.7.1",
+    "bls12-381-keygen": "^0.1.2",
     "noble-bls12-381": "^0.9.0"
   },
   "devDependencies": {

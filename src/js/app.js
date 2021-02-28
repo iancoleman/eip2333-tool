@@ -59,7 +59,7 @@
         // TODO verify?
         let passphrase = DOM.passphrase.value;
         seed = libs.bip39.mnemonicToSeedSync(mnemonic, passphrase);
-        let seedHex = seed.toString("hex");
+        let seedHex = bytesToHex(seed);
         DOM.seed.value = seedHex;
         seedChanged();
     }
@@ -76,9 +76,8 @@
         }
         let seedHex = DOM.seed.value;
         let seed = hexToBytes(seedHex);
-        let seedBuffer = libs.buffer.Buffer(seed);
-        let masterSecretKey = libs.blshdkey.deriveMasterSK(seedBuffer);
-        DOM.masterSecretKey.value = masterSecretKey.toString("hex").padStart(32, "0");
+        let masterSecretKey = libs.blskeygen.deriveMaster(seed);
+        DOM.masterSecretKey.value = bytesToHex(masterSecretKey).padStart(32, "0");
         masterSecretKeyChanged();
     }
 
@@ -93,9 +92,9 @@
             DOM.passphrase.value = "";
             DOM.seed.value = "";
         }
-        let masterSecretKey = new libs.buffer.Buffer(hexToBytes(DOM.masterSecretKey.value));
+        let masterSecretKey = new hexToBytes(DOM.masterSecretKey.value);
         let masterPublicKey = libs.noblebls.getPublicKey(masterSecretKey);
-        DOM.masterPublicKey.value = libs.buffer.Buffer(masterPublicKey).toString("hex");
+        DOM.masterPublicKey.value = bytesToHex(masterPublicKey);
         clearTable();
         showRows();
     }
@@ -118,19 +117,18 @@
     function showRows() {
         let rowsToAdd = parseInt(DOM.numRows.value);
         let startIndex = parseInt(DOM.startIndex.value) || currentTableIndex + 1;
-        let masterSecretKey = new libs.buffer.Buffer(hexToBytes(DOM.masterSecretKey.value));
+        let masterSecretKey = hexToBytes(DOM.masterSecretKey.value);
         // TODO validate masterSecretKey
         let template = DOM.keyRow.innerHTML;
         let path = DOM.path.value;
         for (let i=startIndex; i<startIndex+rowsToAdd; i++) {
             let childPath = path.replace(/i/g, i);
-            // libs.blshdkey.pathToIndices is too strict
             let childIndices = getIndices(childPath);
             let childSk = masterSecretKey;
             for (let i=0; i<childIndices.length; i++) {
                 let childIndice = childIndices[i];
                 try {
-                    childSk = libs.blshdkey.deriveChildSK(childSk, childIndice);
+                    childSk = libs.blskeygen.deriveChild(childSk, childIndice);
                 }
                 catch (e) {
                     // TODO show error?
@@ -139,8 +137,8 @@
             }
             let childPk = libs.noblebls.getPublicKey(childSk);
             // show in table
-            let childSkHex = new libs.buffer.Buffer(childSk).toString("hex");
-            let childPkHex = new libs.buffer.Buffer(childPk).toString("hex");
+            let childSkHex = bytesToHex(childSk);
+            let childPkHex = bytesToHex(childPk);
             let temp = document.createElement("tbody");
             temp.innerHTML = template;
             let row = temp.children[0];
@@ -165,9 +163,18 @@
 
     // https://stackoverflow.com/a/34356351
     function hexToBytes(hex) {
-        for (var bytes = [], c = 0; c < hex.length; c += 2)
-            bytes.push(parseInt(hex.substr(c, 2), 16));
+        let bytes = new Uint8Array(hex.length/2);
+        for (let c = 0; c < hex.length; c += 2)
+            bytes[c/2] = parseInt(hex.substr(c, 2), 16);
         return bytes;
+    }
+    function bytesToHex(bytes) {
+        for (var hex = [], i = 0; i < bytes.length; i++) {
+            var current = bytes[i] < 0 ? bytes[i] + 256 : bytes[i];
+            hex.push((current >>> 4).toString(16));
+            hex.push((current & 0xF).toString(16));
+        }
+        return hex.join("");
     }
 
     function clearTable() {
