@@ -23,6 +23,7 @@
         DOM.moreRows = byId("more-rows");
         DOM.numRows = byId("num-rows");
         DOM.startIndex = byId("start-index");
+        DOM.languages = document.querySelectorAll(".languages a");
     }
 
     function setEvents() {
@@ -36,11 +37,16 @@
         DOM.suggestedPaths.forEach(function(e, i) {
             e.addEventListener("click", setSuggestedPath);
         });
+        DOM.languages.forEach(function(e, i) {
+            e.addEventListener("click", languageChanged);
+        });
     }
 
     // Event handlers
     function generate(e) {
-        e.preventDefault();
+        if (e) {
+            e.preventDefault();
+        }
         let language = getLanguage();
         libs.bip39.setDefaultWordlist(language);
         let strength = parseInt(DOM.strength.value);
@@ -52,6 +58,22 @@
     function mnemonicChanged(e) {
         e.preventDefault();
         processMnemonic();
+    }
+
+    function languageChanged(e) {
+        let hasMnemonic = DOM.mnemonic.value.length > 0;
+        if (hasMnemonic) {
+            from = libs.bip39.getDefaultWordlist();
+            let to = e.target.getAttribute("href").substring(1);
+            libs.bip39.setDefaultWordlist(to);
+            let oldMnemonic = DOM.mnemonic.value;
+            newMnemonic = convertMnemonicLanguage(oldMnemonic, from, to);
+            DOM.mnemonic.value = newMnemonic;
+            processMnemonic();
+        }
+        else {
+            generate();
+        }
     }
 
     function processMnemonic() {
@@ -153,7 +175,12 @@
     // Util functions
 
     function getLanguage() {
-        // TODO
+        let h = location.hash;
+        for (language in libs.bip39.wordlists) {
+            if (h.indexOf(language) > -1) {
+                return language;
+            }
+        }
         return "english";
     }
 
@@ -193,6 +220,38 @@
             }
         }
         return indices;
+    }
+
+    function convertMnemonicLanguage(oldMnemonic, oldLang, newLang) {
+        // get words
+        let oldWords = oldMnemonic.split(/\s+/g);
+        // get indices
+        let indices = [];
+        let oldWordlist = libs.bip39.wordlists[oldLang];
+        for (let i=0; i<oldWords.length; i++) {
+            let oldWord = oldWords[i];
+            let indice = oldWordlist.indexOf(oldWord);
+            if (indice == -1) {
+                console.log("Could not find word in bip39 list: " + oldWord);
+            }
+            else {
+                indices.push(indice);
+            }
+        }
+        // convert indices to new words
+        let newWordlist = libs.bip39.wordlists[newLang];
+        let newWords = [];
+        for (let i=0; i<indices.length; i++) {
+            let indice = indices[i];
+            let newWord = newWordlist[indice];
+            newWords.push(newWord);
+        }
+        // convert new words to new mnemonic
+        let newMnemonic = newWords.join(" ");
+        if (newLang == "japanese") {
+            newMnemonic = newWords.join('\u3000');
+        }
+        return newMnemonic;
     }
 
     init();

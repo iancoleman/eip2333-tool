@@ -21,3 +21,6 @@ body {
 .mono {
     font-family: mono;
 }
+#mnemonic {
+    word-break: keep-all;
+}
