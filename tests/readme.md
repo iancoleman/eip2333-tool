@@ -39,3 +39,10 @@ Seed: d4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3
 Master Secret Key: 2a0e28ffa5fbbe2f8e7aad4ed94f745d6bf755c51182e119bb1694fe61d3afca
 Path: m/42
 Child Secret Key: 455c0dc9fccb3395825d92a60d2672d69416be1c2578a87a7a3d3ced11ebb88d
+
+
+Secret key is left padded correctly
+ride start reform mouse struggle catch poet setup slight wife decrease pass foster essence tennis
+m/13
+Should not be e018421ddc2f1530403a00a5fe5f3c0ed2cf49ad8e200f97c6ac51afbaef86
+Should be 00e018421ddc2f1530403a00a5fe5f3c0ed2cf49ad8e200f97c6ac51afbaef86

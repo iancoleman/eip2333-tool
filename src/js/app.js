@@ -99,7 +99,7 @@
         let seedHex = DOM.seed.value;
         let seed = hexToBytes(seedHex);
         let masterSecretKey = libs.blskeygen.deriveMaster(seed);
-        DOM.masterSecretKey.value = bytesToHex(masterSecretKey).padStart(32, "0");
+        DOM.masterSecretKey.value = bytesToHex(masterSecretKey).padStart(64, "0");
         masterSecretKeyChanged();
     }
 
@@ -114,9 +114,9 @@
             DOM.passphrase.value = "";
             DOM.seed.value = "";
         }
-        let masterSecretKey = new hexToBytes(DOM.masterSecretKey.value);
+        let masterSecretKey = hexToBytes(DOM.masterSecretKey.value);
         let masterPublicKey = libs.noblebls.getPublicKey(masterSecretKey);
-        DOM.masterPublicKey.value = bytesToHex(masterPublicKey);
+        DOM.masterPublicKey.value = bytesToHex(masterPublicKey).padStart(96, "0");
         clearTable();
         showRows();
     }
@@ -159,8 +159,8 @@
             }
             let childPk = libs.noblebls.getPublicKey(childSk);
             // show in table
-            let childSkHex = bytesToHex(childSk);
-            let childPkHex = bytesToHex(childPk);
+            let childSkHex = bytesToHex(childSk).padStart(64, "0");
+            let childPkHex = bytesToHex(childPk).padStart(96, "0");
             let temp = document.createElement("tbody");
             temp.innerHTML = template;
             let row = temp.children[0];
