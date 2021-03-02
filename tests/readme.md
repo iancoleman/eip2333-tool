@@ -46,3 +46,10 @@ ride start reform mouse struggle catch poet setup slight wife decrease pass fost
 m/13
 Should not be e018421ddc2f1530403a00a5fe5f3c0ed2cf49ad8e200f97c6ac51afbaef86
 Should be 00e018421ddc2f1530403a00a5fe5f3c0ed2cf49ad8e200f97c6ac51afbaef86
+
+
+Selecting a language without an existing mnemonic will generate a random one in that language
+
+Changing language keeps the same index for each word
+
+Changing language changes the seed

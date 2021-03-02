@@ -43,11 +43,13 @@
     }
 
     // Event handlers
-    function generate(e) {
+    function generate(e, language) {
         if (e) {
             e.preventDefault();
         }
-        let language = getLanguage();
+        if (!language) {
+            language = getLanguage();
+        }
         libs.bip39.setDefaultWordlist(language);
         let strength = parseInt(DOM.strength.value);
         let mnemonic = libs.bip39.generateMnemonic(strength);
@@ -63,16 +65,17 @@
     function languageChanged(e) {
         let hasMnemonic = DOM.mnemonic.value.length > 0;
         if (hasMnemonic) {
-            from = libs.bip39.getDefaultWordlist();
-            let to = e.target.getAttribute("href").substring(1);
-            libs.bip39.setDefaultWordlist(to);
+            fromLang = libs.bip39.getDefaultWordlist();
+            let toLang = e.target.getAttribute("href").substring(1);
+            libs.bip39.setDefaultWordlist(toLang);
             let oldMnemonic = DOM.mnemonic.value;
-            newMnemonic = convertMnemonicLanguage(oldMnemonic, from, to);
+            newMnemonic = convertMnemonicLanguage(oldMnemonic, fromLang, toLang);
             DOM.mnemonic.value = newMnemonic;
             processMnemonic();
         }
         else {
-            generate();
+            let toLang = e.target.getAttribute("href").substring(1);
+            generate(null, toLang);
         }
     }
 
