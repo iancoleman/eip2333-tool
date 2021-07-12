@@ -6,7 +6,7 @@
   },
   "dependencies": {
     "bip39": "^3.0.3",
-    "bls12-381-keygen": "^0.1.2",
+    "bls12-381-keygen": "^0.1.4",
     "noble-bls12-381": "^0.14.0"
   },
   "devDependencies": {
