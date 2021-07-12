@@ -348,4 +348,21 @@ it('changing language changes the seed', function(done) {
     });
 });
 
+
+// Github issue 2
+// https://github.com/iancoleman/eip2333-tool/issues/2
+// Mnemonic gives invalid master secret key, 63 chars
+it('shows the correct secret key that does not work in v0.1.2 in github releases', function(done) {
+    driver.findElement(By.css('#mnemonic'))
+        .sendKeys('enough fever tattoo rich walnut engage spin course example witness loan exhaust retire always brush');
+    driver.sleep(generateDelay).then(function() {
+        driver.findElements(By.css('#master-secret-key')).then(function(mskEl) {
+            mskEl[0].getAttribute("value").then(function(msk) {
+                expect(msk).toBe("0073427a557244603962453d4c3971646d560333a0d1518619399419e006c34b");
+                done();
+            });
+        });
+    });
+});
+
 });
