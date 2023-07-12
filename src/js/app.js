@@ -80,7 +80,7 @@
     }
 
     function processMnemonic() {
-        let mnemonic = DOM.mnemonic.value;
+        let mnemonic = DOM.mnemonic.value.trim();
         // TODO verify?
         let passphrase = DOM.passphrase.value;
         seed = libs.bip39.mnemonicToSeedSync(mnemonic, passphrase);
